@@ -75,7 +75,7 @@ async function runAnalysis(input: z.infer<typeof intakeSchema>): Promise<Analysi
   });
   const result = streamText({
     model: provider.responses("openai/gpt-6-astra"),
-    system:
+    instructions:
       "You are an AI solutions engineer auditing a small business workflow in the Philippines. Map the workflow into 4-10 ordered steps. For each: short step name, role/owner, realistic minutes per single run, whether it's manual, automatable_share (exactly one of 0, 0.25, 0.5, 0.75, 1), a one-sentence automation idea, a tool category (e.g. 'LLM extraction', 'workflow automation', 'form + database', 'e-signature', 'document generation'), and implementation complexity (low/medium/high). Also return 3-5 risks/assumptions and a 30/60/90-day plan where each phase has a goal and 2-4 tasks. NEVER compute money, costs, or savings.",
     prompt: `Business: ${input.business_name} (${input.industry}, ${input.team_size} staff)\nWorkflow: ${input.workflow_name}\nHow it's done today: ${input.description}\nRuns per week: ${input.runs_per_week}\nPeople involved: ${input.roles}\nTools today: ${input.tools || "n/a"}\nPain points: ${input.pain_points || "n/a"}`,
     output: Output.object({ schema }),
