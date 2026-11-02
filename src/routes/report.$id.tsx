@@ -107,12 +107,34 @@ function Report() {
   }
 
   async function copyLink() {
+    const url = window.location.href;
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(url);
       toast.success("Share link copied.");
+      return;
     } catch {
-      toast.error("Couldn't copy. The link is: " + window.location.href);
+      // fall through to legacy copy
     }
+    let ok = false;
+    const ta = document.createElement("textarea");
+    try {
+      ta.value = url;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "0";
+      ta.style.left = "0";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, url.length);
+      ok = document.execCommand("copy");
+    } catch {
+      ok = false;
+    } finally {
+      ta.remove();
+    }
+    if (ok) toast.success("Share link copied.");
+    else toast.error("Couldn't copy. The link is: " + url);
   }
 
   const chart = steps.map((s, i) => ({
