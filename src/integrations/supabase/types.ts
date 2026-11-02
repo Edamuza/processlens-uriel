@@ -14,7 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audits: {
+        Row: {
+          analysis: Json | null
+          business_name: string
+          complexity_costs: Json
+          created_at: string
+          description: string
+          hourly_cost: number
+          hours_saved: number
+          id: string
+          industry: string
+          is_seed: boolean
+          monthly_cost: number
+          monthly_hours: number
+          monthly_savings: number
+          pain_points: string
+          roles: string
+          runs_per_week: number
+          status: string
+          team_size: number
+          tools: string
+          updated_at: string
+          workflow_name: string
+        }
+        Insert: {
+          analysis?: Json | null
+          business_name: string
+          complexity_costs?: Json
+          created_at?: string
+          description?: string
+          hourly_cost?: number
+          hours_saved?: number
+          id?: string
+          industry?: string
+          is_seed?: boolean
+          monthly_cost?: number
+          monthly_hours?: number
+          monthly_savings?: number
+          pain_points?: string
+          roles?: string
+          runs_per_week?: number
+          status?: string
+          team_size?: number
+          tools?: string
+          updated_at?: string
+          workflow_name: string
+        }
+        Update: {
+          analysis?: Json | null
+          business_name?: string
+          complexity_costs?: Json
+          created_at?: string
+          description?: string
+          hourly_cost?: number
+          hours_saved?: number
+          id?: string
+          industry?: string
+          is_seed?: boolean
+          monthly_cost?: number
+          monthly_hours?: number
+          monthly_savings?: number
+          pain_points?: string
+          roles?: string
+          runs_per_week?: number
+          status?: string
+          team_size?: number
+          tools?: string
+          updated_at?: string
+          workflow_name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
