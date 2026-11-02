@@ -139,7 +139,7 @@
   .report-header * { color: var(--foreground) !important; }
   .print-visible { overflow: visible !important; }
   table { font-size: 10px; width: 100% !important; }
-  .print-chart { height: 220px !important; width: 100%; }
+  .print-chart { break-inside: avoid; }
   .shadow-card { box-shadow: none !important; }
   @page { margin: 12mm; }
 }
