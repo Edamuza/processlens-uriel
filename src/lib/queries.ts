@@ -28,12 +28,12 @@ export interface AuditRow {
 const norm = (r: Record<string, unknown>): AuditRow =>
   ({
     ...r,
-    hourly_cost: Number(r.hourly_cost),
-    runs_per_week: Number(r.runs_per_week),
-    monthly_hours: Number(r.monthly_hours),
-    monthly_cost: Number(r.monthly_cost),
-    hours_saved: Number(r.hours_saved),
-    monthly_savings: Number(r.monthly_savings),
+    hourly_cost: Number(r['hourly_cost']),
+    runs_per_week: Number(r['runs_per_week']),
+    monthly_hours: Number(r['monthly_hours']),
+    monthly_cost: Number(r['monthly_cost']),
+    hours_saved: Number(r['hours_saved']),
+    monthly_savings: Number(r['monthly_savings']),
   }) as unknown as AuditRow;
 
 export const auditsQuery = () =>

@@ -47,7 +47,7 @@ function friendlyAiError(e: unknown): string {
 }
 
 async function runAnalysis(input: z.infer<typeof intakeSchema>): Promise<Analysis> {
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = process.env['LOVABLE_API_KEY'];
   if (!apiKey) throw new Error("AI is not configured.");
   const { createOpenAI } = await import("@ai-sdk/openai");
   const { streamText, Output } = await import("ai");
