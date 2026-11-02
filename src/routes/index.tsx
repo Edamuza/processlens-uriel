@@ -121,7 +121,7 @@ function Index() {
                 </div>
                 <Stat label="Monthly cost" value={php(a.monthly_cost)} />
                 <Stat label="Est. savings / mo" value={php(a.monthly_savings)} accent />
-                <Stat label="Date" value={new Date(a.created_at).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" })} />
+                <Stat label="Date" value={new Date(a.created_at).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Manila" })} />
               </Link>
             ))}
           </div>
