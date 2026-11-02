@@ -135,4 +135,11 @@
   body { background: white; }
   .print-break { break-inside: avoid; }
   input, select { border: none !important; background: transparent !important; padding: 0 !important; }
+  .report-header { background: white !important; color: var(--foreground) !important; border: 1px solid var(--border); }
+  .report-header * { color: var(--foreground) !important; }
+  .print-visible { overflow: visible !important; }
+  table { font-size: 10px; width: 100% !important; }
+  .print-chart { height: 220px !important; width: 100%; }
+  .shadow-card { box-shadow: none !important; }
+  @page { margin: 12mm; }
 }
