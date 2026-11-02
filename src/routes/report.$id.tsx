@@ -34,6 +34,13 @@ export const Route = createFileRoute("/report/$id")({
       <Link to="/" className="text-primary underline mt-4 inline-block">Back to audits</Link>
     </div>
   ),
+  errorComponent: ({ error }) => (
+    <div className="text-center py-20">
+      <h1 className="text-2xl font-semibold">This report didn't load</h1>
+      <p className="text-muted-foreground mt-2">{error instanceof Error ? error.message : "Something went wrong."}</p>
+      <Link to="/" className="text-primary underline mt-4 inline-block">Back to audits</Link>
+    </div>
+  ),
   component: Report,
 });
 
@@ -70,6 +77,10 @@ function Report() {
   async function save() {
     setSaving(true);
     try {
+      if (!(hourly > 0)) {
+        toast.error("Hourly cost must be greater than 0 to save.");
+        return;
+      }
       const r = await saveReport({ data: { id, hourly_cost: hourly, complexity_costs: costs, steps } });
       if (!r.ok) throw new Error(r.error);
       await qc.invalidateQueries();
@@ -112,7 +123,7 @@ function Report() {
 
   return (
     <div className="space-y-6">
-      <header className="rounded-xl bg-hero text-primary-foreground p-6 sm:p-8 print-break">
+      <header className="report-header rounded-xl bg-hero text-primary-foreground p-6 sm:p-8 print-break">
         <div className="text-xs uppercase tracking-widest text-primary-foreground/70">ROI report · {a.industry} · {a.team_size} staff</div>
         <h1 className="mt-1 text-3xl sm:text-4xl font-semibold">{a.workflow_name}</h1>
         <p className="mt-1 text-primary-foreground/85">{a.business_name}</p>
@@ -136,13 +147,13 @@ function Report() {
         <Kpi label="Current monthly cost" value={php(k.monthlyCost)} />
         <Kpi label="Hours saved / month" value={`${num(k.hoursSaved)} h`} highlight />
         <Kpi label="Monthly savings" value={php(k.monthlySavings)} highlight />
-        <Kpi label="Payback" value={k.paybackMonths === null ? "n/a" : `${k.paybackMonths} mo`} sub={`Impl. ${php(k.implementationCost)}`} />
+        <Kpi label="Payback" value={k.paybackMonths === null ? "n/a" : `${k.paybackMonths.toFixed(1)} mo`} sub={`Impl. ${php(k.implementationCost)}`} />
       </section>
 
-      <section className="rounded-xl border bg-card shadow-card overflow-hidden print-break">
+      <section className="rounded-xl border bg-card shadow-card overflow-hidden print-visible">
         <div className="p-4 border-b"><h2 className="text-lg font-semibold">Workflow steps</h2>
           <p className="text-xs text-muted-foreground">Edit minutes or automatable % — KPIs update instantly.</p></div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto print-visible">
           <table className="w-full text-sm">
             <thead className="bg-muted text-left text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
@@ -156,8 +167,8 @@ function Report() {
                   <td className="p-3 font-medium min-w-40">{i + 1}. {s.name}</td>
                   <td className="p-3 text-muted-foreground">{s.owner}</td>
                   <td className="p-3">
-                    <Input aria-label={`Minutes for ${s.name}`} type="number" min={0} className="w-20 h-8 tabular"
-                      value={s.minutes} onChange={(e) => updateStep(i, { minutes: Math.max(0, Number(e.target.value) || 0) })} />
+                    <NumInput aria-label={`Minutes for ${s.name}`} className="w-20 h-8 tabular"
+                      value={s.minutes} onChange={(v) => updateStep(i, { minutes: v })} />
                   </td>
                   <td className="p-3">
                     <select aria-label={`Automatable share for ${s.name}`} className="h-8 rounded-md border bg-background px-2 tabular"
@@ -176,7 +187,7 @@ function Report() {
 
       <section className="rounded-xl border bg-card shadow-card p-4 print-break">
         <h2 className="text-lg font-semibold mb-3">Minutes per step</h2>
-        <div className="h-72">
+        <div className="h-72 print-chart">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chart} margin={{ left: -10, right: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -199,10 +210,13 @@ function Report() {
         <section className="rounded-xl border bg-card shadow-card p-5 print-break">
           <h2 className="text-lg font-semibold">Assumptions</h2>
           <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-            <NumField label="Hourly cost (PHP)" value={hourly} onChange={(v) => setHourly(Math.max(1, v))} />
-            <NumField label="Low complexity (PHP)" value={costs.low} onChange={(v) => setCosts((c) => ({ ...c, low: Math.max(0, v) }))} />
-            <NumField label="Medium complexity (PHP)" value={costs.medium} onChange={(v) => setCosts((c) => ({ ...c, medium: Math.max(0, v) }))} />
-            <NumField label="High complexity (PHP)" value={costs.high} onChange={(v) => setCosts((c) => ({ ...c, high: Math.max(0, v) }))} />
+            <div>
+              <NumField label="Hourly cost (PHP)" value={hourly} onChange={setHourly} />
+              {!(hourly > 0) && <p className="mt-1 text-xs text-destructive">Hourly cost must be greater than 0 to save.</p>}
+            </div>
+            <NumField label="Low complexity (PHP)" value={costs.low} onChange={(v) => setCosts((c) => ({ ...c, low: v }))} />
+            <NumField label="Medium complexity (PHP)" value={costs.medium} onChange={(v) => setCosts((c) => ({ ...c, medium: v }))} />
+            <NumField label="High complexity (PHP)" value={costs.high} onChange={(v) => setCosts((c) => ({ ...c, high: v }))} />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">Monthly hours = minutes/run × runs/week × 4.33 ÷ 60. Implementation cost sums the complexity cost of every step with automatable share above 0.</p>
         </section>
@@ -243,7 +257,36 @@ function NumField({ label, value, onChange }: { label: string; value: number; on
   return (
     <label className="space-y-1">
       <span className="text-xs text-muted-foreground">{label}</span>
-      <Input type="number" className="tabular h-9" value={value} onChange={(e) => onChange(Number(e.target.value) || 0)} />
+      <NumInput className="tabular h-9" value={value} onChange={onChange} />
     </label>
+  );
+}
+
+/** Numeric input that keeps a local string while typing; empty counts as 0 live, clamps to >= 0 on blur. */
+function NumInput({ value, onChange, className, "aria-label": ariaLabel }: {
+  value: number; onChange: (v: number) => void; className?: string | undefined; "aria-label"?: string | undefined;
+}) {
+  const [text, setText] = useState(String(value));
+  useEffect(() => {
+    setText((t) => ((Number(t) || 0) === value ? t : String(value)));
+  }, [value]);
+  return (
+    <Input
+      type="number"
+      inputMode="decimal"
+      aria-label={ariaLabel}
+      className={className}
+      value={text}
+      onChange={(e) => {
+        setText(e.target.value);
+        const n = Number(e.target.value);
+        onChange(Number.isFinite(n) ? n : 0);
+      }}
+      onBlur={() => {
+        const n = Math.max(0, Number(text) || 0);
+        setText(String(n));
+        onChange(n);
+      }}
+    />
   );
 }

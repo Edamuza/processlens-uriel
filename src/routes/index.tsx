@@ -25,11 +25,12 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function Kpi({ label, value }: { label: string; value: string }) {
+function Kpi({ label, value, caption }: { label: string; value: string; caption?: string }) {
   return (
     <div className="rounded-lg border bg-card p-5 shadow-card">
       <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-2 text-2xl font-semibold tabular text-foreground">{value}</div>
+      {caption && <div className="mt-1 text-xs text-muted-foreground">{caption}</div>}
     </div>
   );
 }
@@ -92,8 +93,8 @@ function Index() {
 
       <section className="grid gap-4 sm:grid-cols-3">
         <Kpi label="Audits" value={String(audits.length)} />
-        <Kpi label="Monthly hours found" value={`${num(totalHours)} h`} />
-        <Kpi label="Monthly savings" value={php(totalSavings)} />
+        <Kpi label="Monthly hours found" value={`${num(totalHours)} h`} caption="Automatable hours per month, summed across audits" />
+        <Kpi label="Monthly savings" value={php(totalSavings)} caption="Sum of stored monthly savings (PHP)" />
       </section>
 
       <section>

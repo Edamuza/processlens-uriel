@@ -42,7 +42,8 @@ function friendlyAiError(e: unknown): string {
   if (status === 402) return "AI credits are exhausted for this workspace. Please try again later.";
   if (status === 403) return "The AI request was denied for this workspace.";
   const msg = e instanceof Error ? e.message : String(e);
-  if (/timeout|aborted/i.test(msg)) return "The analysis timed out. Please try again.";
+  const name = (e as { name?: string })?.name ?? "";
+  if (/timeout|abort/i.test(msg) || /Timeout|Abort/.test(name)) return "The analysis timed out. Please try again.";
   return "The AI analysis failed. Please try again.";
 }
 
@@ -80,6 +81,7 @@ async function runAnalysis(input: z.infer<typeof intakeSchema>): Promise<Analysi
     prompt: `Business: ${input.business_name} (${input.industry}, ${input.team_size} staff)\nWorkflow: ${input.workflow_name}\nHow it's done today: ${input.description}\nRuns per week: ${input.runs_per_week}\nPeople involved: ${input.roles}\nTools today: ${input.tools || "n/a"}\nPain points: ${input.pain_points || "n/a"}`,
     output: Output.object({ schema }),
     maxRetries: 0,
+    abortSignal: AbortSignal.timeout(90_000),
     providerOptions: {
       openai: {
         store: false,
