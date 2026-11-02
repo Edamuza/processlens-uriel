@@ -34,8 +34,8 @@ const EMPTY: Form = {
   workflow_name: "", description: "", runs_per_week: "", roles: "", tools: "", pain_points: "",
 };
 
-export function validateStep(step: number, f: Form): Record<string, string> {
-  const e: Record<string, string> = {};
+export function validateStep(step: number, f: Form): Partial<Record<keyof Form, string>> {
+  const e: Partial<Record<keyof Form, string>> = {};
   if (step === 0) {
     if (!f.business_name.trim()) e.business_name = "Business name is required.";
     if (!f.industry) e.industry = "Pick an industry.";
@@ -56,7 +56,7 @@ const STEPS = ["Business", "Workflow", "Review & analyze"];
 function NewAudit() {
   const [step, setStep] = useState(0);
   const [f, setF] = useState<Form>(EMPTY);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof Form, string>>>({});
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -189,7 +189,7 @@ function NewAudit() {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, children }: { label: string; error?: string | undefined; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
       <Label>{label}</Label>

@@ -224,7 +224,7 @@ function Report() {
   );
 }
 
-function Kpi({ label, value, sub, highlight }: { label: string; value: string; sub?: string; highlight?: boolean }) {
+function Kpi({ label, value, sub, highlight }: { label: string; value: string; sub?: string | undefined; highlight?: boolean | undefined }) {
   return (
     <div className={`rounded-lg border p-4 shadow-card ${highlight ? "bg-secondary border-primary/30" : "bg-card"}`}>
       <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
