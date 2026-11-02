@@ -3,8 +3,8 @@ import { ScanSearch } from "lucide-react";
 import type { ReactNode } from "react";
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const linkCls = "rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted";
-  const active = { className: "rounded-md px-3 py-1.5 text-sm bg-secondary text-foreground font-medium" };
+  const linkCls = "whitespace-nowrap rounded-md px-2 sm:px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted";
+  const active = { className: "whitespace-nowrap rounded-md px-2 sm:px-3 py-1.5 text-sm bg-secondary text-foreground font-medium" };
   return (
     <div className="min-h-screen flex flex-col">
       <div className="no-print bg-banner text-banner-foreground text-center text-xs py-1.5 px-4">
